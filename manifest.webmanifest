@@ -1,0 +1,17 @@
+{
+  "name": "Knight's Dice",
+  "short_name": "Knight's Dice",
+  "description": "Een middeleeuws dobbelspel met quests, skins, pakjes, medailles en eindbazen.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#120c08",
+  "theme_color": "#120c08",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#120c08">
+    <meta name="description" content="Knight's Dice is een middeleeuws dobbelspel met quests, skins, pakjes, medailles en eindbazen.">
+    <title>Knight's Dice</title>
+    <link rel="canonical" href="https://knightsdice.com/">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="logo.png?v=knights-dice-logo" type="image/png">
+    <link rel="stylesheet" href="styles.css?v=20260618-smaller-bosses">
+  </head>
+  <body>
+    <section id="authScreen" class="auth-screen" aria-label="Inloggen">
+      <div class="auth-card">
+        <img src="logo.png?v=knights-dice-logo" alt="" class="auth-logo">
+        <h1>Knight's Dice</h1>
+        <p>Log in om je eigen voortgang te laden.</p>
+        <div class="auth-fields">
+          <input id="accountName" type="text" autocomplete="username" placeholder="Accountnaam">
+          <input id="accountPassword" type="password" autocomplete="current-password" placeholder="Wachtwoord">
+        </div>
+        <div class="actions">
+          <button id="loginButton" class="primary" type="button">Log In</button>
+          <button id="createAccountButton" class="secondary" type="button">Nieuw Account</button>
+        </div>
+        <p id="authMessage" class="log"></p>
+      </div>
+    </section>
+
+    <main id="appShell" class="app hidden">
+      <header class="hero">
+        <div class="brand">
+          <img src="logo.png?v=knights-dice-logo" alt="" class="logo">
+          <div>
+            <h1>Knight's Dice</h1>
+            <p>Gooi, verdien medailles, open skinpakjes en versla de bazen.</p>
+          </div>
+        </div>
+        <div class="account-bar">
+          <div class="knight-account">
+            <div id="knightAvatar" class="knight-avatar" aria-hidden="true"></div>
+            <span id="accountLabel">Account</span>
+          </div>
+          <a class="site-link" href="https://knightsdice.com/" target="_blank" rel="noopener">Knightsdice.com</a>
+          <button id="logoutButton" class="ghost" type="button">Uitloggen</button>
+          <button id="adminToggleButton" class="ghost" type="button">Admin</button>
+        </div>
+      </header>
+
+      <section id="adminPanel" class="admin-panel hidden" aria-label="Admin gedeelte">
+        <div id="adminLogin" class="admin-login">
+          <h2>Admin</h2>
+          <p>Log in om alle dobbelstenen en skins te bekijken.</p>
+          <div class="admin-row">
+            <input id="adminPassword" type="password" placeholder="Wachtwoord" autocomplete="current-password">
+            <button id="adminLoginButton" class="primary" type="button">Log In</button>
+          </div>
+          <p id="adminMessage" class="log"></p>
+        </div>
+        <div id="adminContent" class="hidden">
+          <div class="panel-heading">
+            <h2>Admin Overzicht</h2>
+            <p>Hier kun je alles bekijken. Dobbelen en kopen staan hier uit.</p>
+          </div>
+          <p class="label">Alle Dobbelstenen</p>
+          <div id="adminDiceList" class="admin-grid"></div>
+          <p class="label">Alle Skins</p>
+          <div id="adminSkinList" class="admin-grid"></div>
+        </div>
+      </section>
+
+      <section class="play-area">
+        <div class="panel roll-panel">
+          <div class="top-bar">
+            <div>
+              <p class="label">Jouw Worp</p>
+              <h2 id="activeDieName">D6 Eiken</h2>
+            </div>
+            <div class="currency-stack">
+              <div class="score-badge"><span id="coinCount">0</span><small>Kronen</small></div>
+              <div class="score-badge nugget-badge"><span id="nuggetCount">0</span><small>Klompjes</small></div>
+              <div class="score-badge medal-badge"><span id="medalCount">0</span><small>Medailles</small></div>
+              <div class="score-badge hero-badge"><span id="heroMedalCount">0</span><small>Helden</small></div>
+            </div>
+          </div>
+
+          <div class="die-stage">
+            <button id="rollButton" class="die-button shape-d6" type="button" aria-label="Gooi">
+              <span id="dieArt" class="die-art" aria-hidden="true"></span>
+              <span id="dieValue" class="die-number">?</span>
+            </button>
+          </div>
+
+          <div class="actions">
+            <button id="questRollButton" class="primary" type="button">Gooi</button>
+            <button id="bossRollButton" class="secondary" type="button">Arena-Worp</button>
+          </div>
+          <p id="rollLog" class="log">Pak je D6 en begin je ridderproef.</p>
+
+          <div class="quick-arena">
+            <div class="mini-heading"><h3>Bazen</h3><span>Klik om te kiezen</span></div>
+            <div id="quickBossList" class="quick-boss-list"></div>
+          </div>
+        </div>
+
+        <div class="panel inventory-panel">
+          <div class="panel-heading">
+            <h2>Uitrusting</h2>
+            <p>Kies je dobbelsteen en skin.</p>
+          </div>
+          <p class="label">Dobbelstenen</p>
+          <div id="diceList" class="choice-grid"></div>
+          <p class="label">Skins</p>
+          <div id="skinList" class="choice-grid skins"></div>
+          <div class="avatar-panel">
+            <div class="mini-heading"><h3>Ridder</h3><span>Uiterlijk</span></div>
+            <div class="avatar-controls">
+              <label>Huidskleur
+                <select id="skinToneSelect">
+                  <option value="light">Licht</option>
+                  <option value="warm">Warm</option>
+                  <option value="tan">Getint</option>
+                  <option value="brown">Bruin</option>
+                  <option value="dark">Donker</option>
+                </select>
+              </label>
+              <label>Haarkleur
+                <select id="hairColorSelect">
+                  <option value="blond">Blond</option>
+                  <option value="brown">Bruin</option>
+                  <option value="black">Zwart</option>
+                  <option value="red">Rood</option>
+                  <option value="silver">Zilver</option>
+                </select>
+              </label>
+              <label>Haar
+                <select id="hairStyleSelect">
+                  <option value="short">Kort</option>
+                  <option value="long">Lang</option>
+                  <option value="mohawk">Kam</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="shop-panel">
+            <div class="mini-heading"><h3>Winkel</h3><span>Pakjes</span></div>
+            <div id="packList" class="pack-list"></div>
+            <div id="shopList" class="shop-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel quest-board">
+        <div class="panel-heading">
+          <h2>Quests</h2>
+          <p>Bij elke quest staat welke medaille je krijgt.</p>
+        </div>
+        <div class="medal-board">
+          <div><strong>Riddermedailles</strong><span id="medalBoardCount">0</span></div>
+          <div><strong>Heldenmedailles</strong><span id="heroMedalBoardCount">0</span></div>
+        </div>
+        <div class="medal-library">
+          <div class="mini-heading"><h3>Medaille Bibliotheek</h3><span>Verzameling</span></div>
+          <div id="medalLibraryList" class="medal-library-list"></div>
+        </div>
+        <div id="questList" class="quest-list"></div>
+      </section>
+
+      <section class="panel arena">
+        <div class="panel-heading">
+          <h2>Arena</h2>
+          <p>Wie na 3 worpen het meeste heeft, wint.</p>
+        </div>
+        <div id="duelBoard" class="duel-board"></div>
+        <div id="bossList" class="boss-list"></div>
+      </section>
+    </main>
+    <script src="game.js?v=20260618-shadow-eye-center"></script>
+  </body>
+</html>
