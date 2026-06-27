@@ -116,6 +116,7 @@ const state = {
 
 let currentAccount = null;
 let isLoadingProgress = false;
+let deferredInstallPrompt = null;
 
 const els = {
   authScreen: q("#authScreen"),
@@ -136,6 +137,7 @@ const els = {
   skinToneSelect: q("#skinToneSelect"),
   hairColorSelect: q("#hairColorSelect"),
   hairStyleSelect: q("#hairStyleSelect"),
+  installAppButton: q("#installAppButton"),
   logoutButton: q("#logoutButton"),
   adminToggleButton: q("#adminToggleButton"),
   adminPanel: q("#adminPanel"),
@@ -321,6 +323,21 @@ function resetLocalPassword() {
   els.resetAccountPassword.value = "";
   els.authMessage.textContent = `Nieuw wachtwoord opgeslagen voor ${name}.`;
   renderAccountRecovery();
+}
+
+function showInstallHelp() {
+  els.rollLog.textContent = "Op Android: open Chrome-menu en kies 'Toevoegen aan startscherm' of 'App installeren'.";
+}
+
+async function installApp() {
+  if (!deferredInstallPrompt) {
+    showInstallHelp();
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  els.installAppButton.classList.add("hidden");
 }
 
 function loginAccount() {
@@ -1086,6 +1103,7 @@ els.accountName.addEventListener("keydown", (event) => {
 els.questRollButton.addEventListener("click", playerQuestRoll);
 els.dieButton.addEventListener("click", playerQuestRoll);
 els.bossRollButton.addEventListener("click", playerBossRoll);
+els.installAppButton.addEventListener("click", installApp);
 els.skinToneSelect.addEventListener("change", () => updateAvatarAppearance("skinTone", els.skinToneSelect.value));
 els.hairColorSelect.addEventListener("change", () => updateAvatarAppearance("hairColor", els.hairColorSelect.value));
 els.hairStyleSelect.addEventListener("change", () => updateAvatarAppearance("hairStyle", els.hairStyleSelect.value));
@@ -1112,5 +1130,16 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   });
 }
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  els.installAppButton.classList.remove("hidden");
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  els.installAppButton.classList.add("hidden");
+});
 
 els.accountName.focus();

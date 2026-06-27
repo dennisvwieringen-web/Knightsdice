@@ -417,6 +417,10 @@ small {
   font-weight: 900;
 }
 
+.install-button {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34), 0 3px 0 #3f230c, 0 0 18px rgba(244, 182, 56, 0.24);
+}
+
 .primary:disabled,
 .secondary:disabled,
 .choice:disabled,
