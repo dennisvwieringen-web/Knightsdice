@@ -337,7 +337,7 @@ async function installApp() {
   deferredInstallPrompt.prompt();
   await deferredInstallPrompt.userChoice;
   deferredInstallPrompt = null;
-  els.installAppButton.classList.add("hidden");
+  els.installAppButton.textContent = "App Geinstalleerd";
 }
 
 function loginAccount() {
@@ -1134,12 +1134,12 @@ if ("serviceWorker" in navigator) {
 window.addEventListener("beforeinstallprompt", (event) => {
   event.preventDefault();
   deferredInstallPrompt = event;
-  els.installAppButton.classList.remove("hidden");
+  els.installAppButton.textContent = "Installeer App";
 });
 
 window.addEventListener("appinstalled", () => {
   deferredInstallPrompt = null;
-  els.installAppButton.classList.add("hidden");
+  els.installAppButton.textContent = "App Geinstalleerd";
 });
 
 els.accountName.focus();
