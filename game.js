@@ -124,6 +124,12 @@ const els = {
   accountPassword: q("#accountPassword"),
   loginButton: q("#loginButton"),
   createAccountButton: q("#createAccountButton"),
+  showAccountsButton: q("#showAccountsButton"),
+  accountRecovery: q("#accountRecovery"),
+  accountList: q("#accountList"),
+  resetAccountName: q("#resetAccountName"),
+  resetAccountPassword: q("#resetAccountPassword"),
+  resetPasswordButton: q("#resetPasswordButton"),
   authMessage: q("#authMessage"),
   knightAvatar: q("#knightAvatar"),
   accountLabel: q("#accountLabel"),
@@ -275,6 +281,46 @@ function showGameForAccount(name) {
   els.accountPassword.value = "";
   els.authMessage.textContent = "";
   render();
+}
+
+function renderAccountRecovery() {
+  const accounts = readAccounts();
+  const names = Object.keys(accounts);
+  els.accountRecovery.classList.remove("hidden");
+  if (!names.length) {
+    els.accountList.innerHTML = `<p class="log">Geen accounts gevonden in deze browser.</p>`;
+    return;
+  }
+  els.accountList.innerHTML = names.map((name) => `<button type="button" class="account-chip" data-account-name="${name}">${name}</button>`).join("");
+  els.accountList.querySelectorAll("[data-account-name]").forEach((button) => {
+    button.addEventListener("click", () => {
+      els.accountName.value = button.dataset.accountName;
+      els.resetAccountName.value = button.dataset.accountName;
+      els.accountPassword.focus();
+    });
+  });
+}
+
+function resetLocalPassword() {
+  const name = els.resetAccountName.value.trim();
+  const password = els.resetAccountPassword.value;
+  const accounts = readAccounts();
+  if (!name || !password) {
+    els.authMessage.textContent = "Vul een accountnaam en nieuw wachtwoord in.";
+    return;
+  }
+  if (!accounts[name]) {
+    els.authMessage.textContent = "Dit account staat niet in deze browser.";
+    renderAccountRecovery();
+    return;
+  }
+  accounts[name].password = password;
+  writeAccounts(accounts);
+  els.accountName.value = name;
+  els.accountPassword.value = password;
+  els.resetAccountPassword.value = "";
+  els.authMessage.textContent = `Nieuw wachtwoord opgeslagen voor ${name}.`;
+  renderAccountRecovery();
 }
 
 function loginAccount() {
@@ -1028,6 +1074,8 @@ function render() {
 
 els.loginButton.addEventListener("click", loginAccount);
 els.createAccountButton.addEventListener("click", createAccount);
+els.showAccountsButton.addEventListener("click", renderAccountRecovery);
+els.resetPasswordButton.addEventListener("click", resetLocalPassword);
 els.logoutButton.addEventListener("click", logoutAccount);
 els.accountPassword.addEventListener("keydown", (event) => {
   if (event.key === "Enter") loginAccount();

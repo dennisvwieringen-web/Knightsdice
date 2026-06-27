@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://knightsdice.com/">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="logo.png?v=knights-dice-logo" type="image/png">
-    <link rel="stylesheet" href="styles.css?v=20260627-pwa-ready">
+    <link rel="stylesheet" href="styles.css?v=20260627-account-recovery">
   </head>
   <body>
     <section id="authScreen" class="auth-screen" aria-label="Inloggen">
@@ -24,6 +24,16 @@
         <div class="actions">
           <button id="loginButton" class="primary" type="button">Log In</button>
           <button id="createAccountButton" class="secondary" type="button">Nieuw Account</button>
+          <button id="showAccountsButton" class="ghost" type="button">Accounts Bekijken</button>
+        </div>
+        <div id="accountRecovery" class="account-recovery hidden">
+          <h2>Accounts Op Deze Telefoon</h2>
+          <div id="accountList" class="account-list"></div>
+          <div class="auth-fields">
+            <input id="resetAccountName" type="text" placeholder="Accountnaam">
+            <input id="resetAccountPassword" type="password" placeholder="Nieuw wachtwoord">
+          </div>
+          <button id="resetPasswordButton" class="secondary" type="button">Wachtwoord Opslaan</button>
         </div>
         <p id="authMessage" class="log"></p>
       </div>
@@ -177,6 +187,6 @@
         <div id="bossList" class="boss-list"></div>
       </section>
     </main>
-    <script src="game.js?v=20260627-pwa-ready"></script>
+    <script src="game.js?v=20260627-account-recovery"></script>
   </body>
 </html>
