@@ -1059,4 +1059,10 @@ els.adminPassword.addEventListener("keydown", (event) => {
   if (event.key === "Enter") els.adminLoginButton.click();
 });
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+  });
+}
+
 els.accountName.focus();

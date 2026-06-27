@@ -1,4 +1,4 @@
-const cacheName = "knights-dice-v1";
+const cacheName = "knights-dice-v2";
 const assets = [
   "./",
   "./index.html",
