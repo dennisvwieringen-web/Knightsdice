@@ -526,7 +526,8 @@ function startLocalDuel() {
 }
 
 function localKeyRoll(playerKey) {
-  if (!state.localDuel.active || state.localDuel.rounds.length >= 3) return;
+  if (!state.localDuel.active) startLocalDuel();
+  if (state.localDuel.rounds.length >= 3) return;
   if (playerKey === "s") state.localDuel.sReady = true;
   if (playerKey === "k") state.localDuel.kReady = true;
   if (state.localDuel.sReady && state.localDuel.kReady) {
@@ -965,9 +966,11 @@ function renderLocalAccountOptions() {
 function renderLocalDuel() {
   const opponent = getLocalOpponentLoadout();
   const mainName = currentAccount || "Speler K";
+  const mainLoadout = { name: mainName, die: getActiveDie(), skin: getActiveSkin() };
   els.localMainPlayer.textContent = `${mainName}: ${getActiveDie().name} ${getActiveSkin().name} - toets K`;
   const sTotal = state.localDuel.rounds.reduce((sum, round) => sum + round.s, 0);
   const kTotal = state.localDuel.rounds.reduce((sum, round) => sum + round.k, 0);
+  const lastRound = state.localDuel.rounds[state.localDuel.rounds.length - 1];
   const result = state.localDuel.rounds.length === 3
     ? kTotal === sTotal ? "Gelijkspel!" : kTotal > sTotal ? `${mainName} wint!` : `${opponent.name} wint!`
     : `Wacht op toetsen: ${state.localDuel.sReady ? "S klaar" : "S"} / ${state.localDuel.kReady ? "K klaar" : "K"}`;
@@ -976,6 +979,26 @@ function renderLocalDuel() {
     return `<div class="round-box"><strong>Ronde ${index + 1}</strong>${round ? `${opponent.name}: ${round.s} <small>(D${round.sSides})</small><br>${mainName}: ${round.k} <small>(D${round.kSides})</small>` : "Nog Niet Gegooid"}</div>`;
   }).join("");
   els.localDuelBoard.innerHTML = `
+    <div class="local-dice-row">
+      <div class="local-dice-card ${state.localDuel.sReady ? "ready" : ""}">
+        <strong>S - ${opponent.name}</strong>
+        <div class="local-die-preview">
+          ${buildDieSvg(opponent.die, opponent.skin, "local-s")}
+          <span>${lastRound?.s ?? "?"}</span>
+        </div>
+        <small>${opponent.die.name} ${opponent.skin.name}</small>
+        <button class="secondary local-roll-button" type="button" data-local-roll="s" ${state.localDuel.rounds.length >= 3 ? "disabled" : ""}>S Gooit</button>
+      </div>
+      <div class="local-dice-card ${state.localDuel.kReady ? "ready" : ""}">
+        <strong>K - ${mainName}</strong>
+        <div class="local-die-preview">
+          ${buildDieSvg(mainLoadout.die, mainLoadout.skin, "local-k")}
+          <span>${lastRound?.k ?? "?"}</span>
+        </div>
+        <small>${mainLoadout.die.name} ${mainLoadout.skin.name}</small>
+        <button class="secondary local-roll-button" type="button" data-local-roll="k" ${state.localDuel.rounds.length >= 3 ? "disabled" : ""}>K Gooit</button>
+      </div>
+    </div>
     <div class="local-score">
       <div><strong>S - ${opponent.name}</strong><span>${sTotal}</span><small>${opponent.die.name} ${opponent.skin.name}</small></div>
       <div><strong>K - ${mainName}</strong><span>${kTotal}</span><small>${getActiveDie().name} ${getActiveSkin().name}</small></div>
@@ -1205,6 +1228,11 @@ els.questRollButton.addEventListener("click", playerQuestRoll);
 els.dieButton.addEventListener("click", playerQuestRoll);
 els.bossRollButton.addEventListener("click", playerBossRoll);
 els.startLocalDuelButton.addEventListener("click", startLocalDuel);
+els.localDuelBoard.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-local-roll]");
+  if (!button) return;
+  localKeyRoll(button.dataset.localRoll);
+});
 els.installAppButton.addEventListener("click", installApp);
 els.skinToneSelect.addEventListener("change", () => updateAvatarAppearance("skinTone", els.skinToneSelect.value));
 els.hairColorSelect.addEventListener("change", () => updateAvatarAppearance("hairColor", els.hairColorSelect.value));

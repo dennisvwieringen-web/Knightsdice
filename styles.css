@@ -966,6 +966,58 @@ small {
   background: linear-gradient(180deg, #25180d, #120b07);
 }
 
+.local-dice-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.local-dice-card {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(228, 182, 75, 0.36);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(244, 182, 56, 0.12), transparent 40%),
+    linear-gradient(180deg, rgba(39, 28, 16, 0.84), rgba(15, 10, 7, 0.74));
+}
+
+.local-dice-card.ready {
+  border-color: rgba(112, 192, 132, 0.82);
+  box-shadow: 0 0 0 1px rgba(112, 192, 132, 0.22), 0 0 16px rgba(112, 192, 132, 0.1);
+}
+
+.local-die-preview {
+  position: relative;
+  width: min(150px, 42vw);
+  aspect-ratio: 1;
+}
+
+.local-die-preview svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.local-die-preview span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #1d1107;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgba(255, 246, 214, 0.5);
+  pointer-events: none;
+}
+
+.local-roll-button {
+  width: 100%;
+}
+
 .local-score {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1271,6 +1323,10 @@ small {
   }
 
   .local-score {
+    grid-template-columns: 1fr;
+  }
+
+  .local-dice-row {
     grid-template-columns: 1fr;
   }
 
