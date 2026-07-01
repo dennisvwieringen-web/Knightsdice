@@ -797,7 +797,7 @@ function dieClipPoints(id) {
     d4: "100,28 24,164 176,164",
     d6: "44,60 78,28 170,28 170,120 136,152 44,152",
     d8: "100,20 164,68 172,126 100,180 28,126 36,68",
-    d10: "100,18 150,42 180,92 158,150 100,182 42,150 20,92 50,42",
+    d10: "100,30 152,56 176,112 132,164 68,164 24,112 48,56",
     d12: "100,14 146,30 178,68 182,126 142,176 100,192 58,176 18,126 22,68 54,30",
     d20: "100,16 168,64 168,132 100,184 32,132 32,64"
   }[id];
@@ -808,7 +808,7 @@ function patternFacePoints(id) {
     d4: "100,28 24,164 176,164",
     d6: "44,60 136,60 136,152 44,152",
     d8: "36,68 100,20 164,68 100,106",
-    d10: "74,86 100,28 126,86 100,132",
+    d10: "66,88 100,42 134,88 100,132",
     d12: "100,66 142,94 126,146 74,146 58,94",
     d20: "64,84 136,84 100,136"
   }[id] || dieClipPoints(id);
@@ -856,18 +856,16 @@ function dieBody(id, light, mid, dark, common) {
   }
   if (id === "d10") {
     return [
-      poly("100,18 50,42 74,86", light, common),
-      poly("100,18 74,86 100,132 126,86", mid, common),
-      poly("100,18 126,86 150,42", light, common),
-      poly("50,42 20,92 74,86", mid, common),
-      poly("150,42 126,86 180,92", dark, common),
-      poly("20,92 42,150 74,86", light, common),
-      poly("180,92 126,86 158,150", dark, common),
-      poly("74,86 42,150 100,182 100,132", mid, common),
-      poly("126,86 100,132 100,182 158,150", dark, common),
-      poly("74,86 100,132 126,86 100,182", mid, common),
-      `<path d="M100 18 150 42 180 92 158 150 100 182 42 150 20 92 50 42Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
-      `<path d="M100 18 74 86 M100 18 126 86 M50 42 74 86 M150 42 126 86 M20 92 74 86 M180 92 126 86 M74 86 100 132 126 86 M42 150 74 86 M158 150 126 86 M42 150 100 182 158 150 M100 132 V182" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`
+      poly("100,30 48,56 66,88", light, common),
+      poly("100,30 66,88 100,132 134,88", mid, common),
+      poly("100,30 134,88 152,56", dark, common),
+      poly("48,56 24,112 66,88", mid, common),
+      poly("152,56 134,88 176,112", dark, common),
+      poly("24,112 68,164 100,132 66,88", light, common),
+      poly("176,112 134,88 100,132 132,164", dark, common),
+      poly("68,164 100,132 132,164", mid, common),
+      `<path d="M100 30 152 56 176 112 132 164 68 164 24 112 48 56Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
+      `<path d="M100 30 66 88 M100 30 134 88 M48 56 66 88 M152 56 134 88 M24 112 66 88 M176 112 134 88 M66 88 100 132 134 88 M68 164 100 132 132 164 M24 112 68 164 M176 112 132 164" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`
     ].join("");
   }
   if (id === "d12") {
@@ -920,7 +918,7 @@ function skinPattern(id, ink, clip, dieId) {
     moon: `<path d="M130 54 C96 60 82 94 96 124 C106 146 126 154 150 144 C128 166 86 152 72 120 C56 82 86 52 130 54 Z" ${fill}/>`,
     dragon: `<g opacity="0.78"><path d="M42 138 C66 86 108 58 150 78 L162 58 L162 96 C150 88 134 92 122 108 C104 130 78 132 42 138 Z" fill="#3a0b05" stroke="#ffd2a8" stroke-width="5" stroke-linejoin="round"/><path d="M82 96 L108 46 L120 92 Z" fill="#ff9b45" stroke="#ffd2a8" stroke-width="4" stroke-linejoin="round"/><path d="M112 80 L136 58 M124 98 L154 92 M68 128 C86 112 104 114 120 104" stroke="#ffd2a8" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="143" cy="80" r="4" fill="#ffd84d"/></g>`,
     sun: `<circle cx="102" cy="100" r="28" fill="#fff4a6" opacity="0.35"/><path d="M102 46 V68 M102 132 V154 M48 100 H70 M134 100 H156 M64 62 L80 78 M124 122 L140 138 M140 62 L124 78 M80 122 L64 138" ${line}/>`,
-    wk: `<g opacity="0.92"><path d="M30 50 H100 V154 H30 Z" fill="#d62525" opacity="0.74"/><path d="M100 50 H170 V154 H100 Z" fill="#159447" opacity="0.74"/><path d="M58 96 H142 L162 154 H38 Z" fill="#1268d6" opacity="0.86"/><path d="M100 50 V154 M30 96 H170 M58 96 L38 154 M142 96 L162 154" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M78 82 C92 70 108 70 122 82 C118 96 112 108 104 118 V132 H96 V118 C88 108 82 96 78 82 Z" fill="#f8fbff" stroke="#174a9a" stroke-width="5" stroke-linejoin="round"/><path d="M84 88 C74 90 72 102 82 110 M116 88 C126 90 128 102 118 110 M92 134 H108 M88 142 H112" fill="none" stroke="#174a9a" stroke-width="5" stroke-linecap="round"/><path d="M96 82 C94 94 99 102 104 112 M110 84 C105 94 108 102 114 108" fill="none" stroke="#174a9a" stroke-width="3" stroke-linecap="round"/></g>`,
+    wk: `<g opacity="0.94"><path d="M58 58 L100 42 L86 106 L52 132 Z" fill="#d62525" opacity="0.82"/><path d="M100 42 L142 58 L148 132 L114 106 Z" fill="#159447" opacity="0.88"/><path d="M86 106 L114 106 L148 132 L52 132 Z" fill="#1268d6" opacity="0.9"/><path d="M100 42 L86 106 L52 132 M100 42 L114 106 L148 132 M86 106 H114 M52 132 H148" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M82 90 C94 78 106 78 118 90 C116 102 110 112 104 120 V132 H96 V120 C90 112 84 102 82 90 Z" fill="#f8fbff" stroke="#174a9a" stroke-width="5" stroke-linejoin="round"/><path d="M88 96 C80 98 78 108 88 114 M112 96 C120 98 122 108 112 114 M92 135 H108 M88 143 H112" fill="none" stroke="#174a9a" stroke-width="5" stroke-linecap="round"/><path d="M96 90 C94 101 99 108 104 116 M109 91 C104 101 108 108 113 113" fill="none" stroke="#174a9a" stroke-width="3" stroke-linecap="round"/></g>`,
     forest: `<path d="M100 42 C80 76 86 114 102 158 C120 114 122 76 100 42 Z" ${fill}/><path d="M100 58 V150 M78 96 C94 98 104 108 108 122 M124 86 C112 96 106 108 102 120" ${line}/>`,
     void: `<circle cx="100" cy="104" r="52" ${fill}/><circle cx="100" cy="104" r="26" fill="black" opacity="0.28"/><path d="M46 104 C72 78 128 78 154 104 C128 130 72 130 46 104 Z" ${line}/>`,
     paladin: `<path d="M100 38 L150 60 V104 C150 134 128 154 100 166 C72 154 50 134 50 104 V60 Z" ${fill}/><path d="M100 60 V136 M74 96 H126" ${line}/>`,
