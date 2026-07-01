@@ -945,8 +945,46 @@ small {
 }
 
 .quest-board,
+.local-duel-panel,
 .arena {
   margin-bottom: 18px;
+}
+
+.local-player-setup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.local-player-setup select {
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 2px solid rgba(237, 189, 83, 0.42);
+  border-radius: 6px;
+  color: var(--ink);
+  background: linear-gradient(180deg, #25180d, #120b07);
+}
+
+.local-score {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.local-score div {
+  padding: 12px;
+  border: 1px solid rgba(228, 182, 75, 0.36);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(39, 28, 16, 0.82), rgba(15, 10, 7, 0.72));
+}
+
+.local-score span {
+  display: block;
+  color: var(--gold);
+  font-size: 2.1rem;
+  font-weight: 900;
 }
 
 .medal-board {
@@ -1229,6 +1267,10 @@ small {
   }
 
   .avatar-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .local-score {
     grid-template-columns: 1fr;
   }
 

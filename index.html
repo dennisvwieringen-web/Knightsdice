@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://knightsdice.com/">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="logo.png?v=knights-dice-logo" type="image/png">
-    <link rel="stylesheet" href="styles.css?v=20260627-install-button-visible">
+    <link rel="stylesheet" href="styles.css?v=20260630-local-duel">
   </head>
   <body>
     <section id="authScreen" class="auth-screen" aria-label="Inloggen">
@@ -163,6 +163,29 @@
         </div>
       </section>
 
+      <section class="panel local-duel-panel">
+        <div class="panel-heading">
+          <h2>Speel Tegen Iemand Naast Je</h2>
+          <p>Speler S drukt op S. Speler K drukt op K. Hoogste totaal na 3 worpen wint.</p>
+        </div>
+        <div class="local-player-setup">
+          <div>
+            <p class="label">Speler S</p>
+            <div class="admin-row">
+              <select id="localOpponentAccount">
+                <option value="guest">Gast - Houten D6</option>
+              </select>
+              <button id="startLocalDuelButton" class="primary" type="button">Start Duel</button>
+            </div>
+          </div>
+          <div>
+            <p class="label">Speler K</p>
+            <p id="localMainPlayer" class="log">Jij speelt met je gekozen dobbelsteen en skin.</p>
+          </div>
+        </div>
+        <div id="localDuelBoard" class="local-duel-board"></div>
+      </section>
+
       <section class="panel quest-board">
         <div class="panel-heading">
           <h2>Quests</h2>
@@ -188,6 +211,6 @@
         <div id="bossList" class="boss-list"></div>
       </section>
     </main>
-    <script src="game.js?v=20260627-install-button-visible"></script>
+    <script src="game.js?v=20260630-local-duel"></script>
   </body>
 </html>

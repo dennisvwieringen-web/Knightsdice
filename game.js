@@ -24,7 +24,7 @@ const skins = [
   skin("moon", "Maansteen", 13, null, "15% kans op +1 Klompje.", ["#f2f0ff", "#9a96d8", "#37335f", "#ffffff"], { nuggets: 1, chance: 0.15 }),
   skin("dragon", "Draak", 14, null, "10% kans om de hoogste zijde te gooien.", ["#ffd2a8", "#c84c2c", "#5b1710", "#230804"], { max: 0.1 }),
   skin("sun", "Zon", 15, null, "Maximale worp geeft +5 Kronen.", ["#fff4a6", "#f1a83a", "#8f3d12", "#251005"], { maxCoins: 5 }),
-  skin("wk", "WK", 18, null, "Geweldige rood-groen-blauwe skin met witte lijnen. 12% kans op +2 Kronen en +1 Klompje.", ["#ffffff", "#d62525", "#1268d6", "#ffffff"], { coins: 2, nuggets: 1, chance: 0.12 }),
+  skin("wk", "WK", 18, null, "Geweldige voetbalskin met witte lijnen, rood, groen en blauw. 12% kans op +2 Kronen en +1 Klompje.", ["#ffffff", "#d62525", "#1268d6", "#ffffff"], { coins: 2, nuggets: 1, chance: 0.12 }),
   skin("forest", "Woud", 6, null, "Worpen van 4 of hoger geven +1 Kroon.", ["#d6f5b8", "#6ea34a", "#2c5124", "#10210b"], { highCoins: 1 }),
   skin("void", "Leegte", 18, null, "8% kans op maximale worp en +1 Klompje.", ["#eee8ff", "#342759", "#05030c", "#ffffff"], { max: 0.08, nuggets: 1 }),
   skin("paladin", "Paladijn", 20, null, "Je worp is nooit lager dan 3.", ["#fff8d8", "#d9dce8", "#6f7891", "#1b1f2a"], { floor: 3 }),
@@ -110,6 +110,13 @@ const state = {
   defeatedBosses: [],
   currentBoss: null,
   duel: [],
+  localDuel: {
+    active: false,
+    opponent: "guest",
+    rounds: [],
+    sReady: false,
+    kReady: false
+  },
   lastDuelResult: null,
   rollTimeout: null
 };
@@ -169,7 +176,11 @@ const els = {
   questList: q("#questList"),
   quickBossList: q("#quickBossList"),
   bossList: q("#bossList"),
-  duelBoard: q("#duelBoard")
+  duelBoard: q("#duelBoard"),
+  localOpponentAccount: q("#localOpponentAccount"),
+  startLocalDuelButton: q("#startLocalDuelButton"),
+  localMainPlayer: q("#localMainPlayer"),
+  localDuelBoard: q("#localDuelBoard")
 };
 
 function q(selector) {
@@ -262,6 +273,13 @@ function applyProgress(progress) {
   Object.assign(state, merged, {
     currentBoss: null,
     duel: [],
+    localDuel: {
+      active: false,
+      opponent: "guest",
+      rounds: [],
+      sReady: false,
+      kReady: false
+    },
     lastDuelResult: null,
     rollTimeout: null
   });
@@ -475,6 +493,52 @@ function applyAfterRoll(roll, sides, skin) {
     messages.push("Skinbonus: +1 Kroon.");
   }
   return messages.join(" ");
+}
+
+function getAccountProgress(name) {
+  const account = readAccounts()[name];
+  return account?.progress || null;
+}
+
+function getLocalOpponentLoadout() {
+  if (state.localDuel.opponent === "guest") {
+    return { name: "Gast", die: dice.find((item) => item.id === "d6"), skin: skins.find((item) => item.id === "oak") };
+  }
+  const progress = getAccountProgress(state.localDuel.opponent);
+  const die = dice.find((item) => item.id === progress?.activeDie) || dice.find((item) => item.id === "d6");
+  const skinItem = skins.find((item) => item.id === progress?.activeSkin) || skins.find((item) => item.id === "oak");
+  return { name: state.localDuel.opponent, die, skin: skinItem };
+}
+
+function localRollFor(loadout) {
+  return applySkin(randomInt(1, loadout.die.sides), loadout.die.sides, loadout.skin);
+}
+
+function startLocalDuel() {
+  state.localDuel = {
+    active: true,
+    opponent: els.localOpponentAccount.value,
+    rounds: [],
+    sReady: false,
+    kReady: false
+  };
+  renderLocalDuel();
+}
+
+function localKeyRoll(playerKey) {
+  if (!state.localDuel.active || state.localDuel.rounds.length >= 3) return;
+  if (playerKey === "s") state.localDuel.sReady = true;
+  if (playerKey === "k") state.localDuel.kReady = true;
+  if (state.localDuel.sReady && state.localDuel.kReady) {
+    const opponent = getLocalOpponentLoadout();
+    const main = { name: currentAccount || "Speler K", die: getActiveDie(), skin: getActiveSkin() };
+    const sRoll = localRollFor(opponent);
+    const kRoll = localRollFor(main);
+    state.localDuel.rounds.push({ s: sRoll, k: kRoll, sSides: opponent.die.sides, kSides: main.die.sides });
+    state.localDuel.sReady = false;
+    state.localDuel.kReady = false;
+  }
+  renderLocalDuel();
 }
 
 function playerQuestRoll() {
@@ -707,8 +771,8 @@ function dieClipPoints(id) {
   return {
     d4: "100,28 24,164 176,164",
     d6: "44,60 78,28 170,28 170,120 136,152 44,152",
-    d8: "100,20 164,68 172,126 100,180 28,126 36,68",
-    d10: "100,14 174,84 166,128 112,176 100,190 88,176 34,128 26,84",
+    d8: "100,18 176,150 24,150",
+    d10: "100,20 162,72 174,110 100,184 26,110 38,72",
     d12: "100,14 146,30 178,68 182,126 142,176 100,192 58,176 18,126 22,68 54,30",
     d20: "100,16 168,64 168,132 100,184 32,132 32,64"
   }[id];
@@ -718,8 +782,8 @@ function patternFacePoints(id) {
   return {
     d4: "100,28 24,164 176,164",
     d6: "44,60 136,60 136,152 44,152",
-    d8: "36,68 100,20 164,68 100,106",
-    d10: "100,14 166,128 112,176 88,176 34,128",
+    d8: "100,42 52,132 148,132",
+    d10: "62,88 100,36 138,88 100,124",
     d12: "100,66 142,94 126,146 74,146 58,94",
     d20: "64,84 136,84 100,136"
   }[id] || dieClipPoints(id);
@@ -755,25 +819,28 @@ function dieBody(id, light, mid, dark, common) {
   }
   if (id === "d8") {
     return [
-      poly("100,20 36,68 100,106", light, common),
-      poly("100,20 100,106 164,68", mid, common),
-      poly("36,68 28,126 100,106", mid, common),
-      poly("164,68 100,106 172,126", dark, common),
-      poly("28,126 100,180 100,106", mid, common),
-      poly("172,126 100,106 100,180", dark, common),
-      `<path d="M100 20 164 68 172 126 100 180 28 126 36 68Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
-      `<path d="M100 20 V106 M36 68 100 106 164 68 M28 126 100 106 172 126 M100 106 V180" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`
+      poly("100,18 52,132 148,132", mid, common),
+      poly("100,18 24,150 52,132", light, common),
+      poly("100,18 148,132 176,150", dark, common),
+      poly("24,150 52,132 100,180", dark, common),
+      poly("148,132 176,150 100,180", mid, common),
+      poly("52,132 148,132 100,180", dark, common),
+      `<path d="M100 18 176 150 100 180 24 150Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
+      `<path d="M100 18 52 132 148 132 Z M24 150 52 132 100 180 148 132 176 150" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`
     ].join("");
   }
   if (id === "d10") {
     return [
-      poly("100,14 26,84 34,128 88,176", light, common),
-      poly("100,14 88,176 112,176 166,128 174,84", mid, common),
-      poly("34,128 88,176 100,190", dark, common),
-      poly("166,128 112,176 100,190", dark, common),
-      poly("88,176 112,176 100,190", dark, common),
-      `<path d="M100 14 174 84 166 128 112 176 100 190 88 176 34 128 26 84Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
-      `<path d="M100 14 34 128 M100 14 166 128 M26 84 34 128 M174 84 166 128 M34 128 88 176 M166 128 112 176 M88 176 100 190 112 176 M88 176 112 176" fill="none" stroke="rgba(0,0,0,0.24)" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>`
+      poly("100,20 38,72 62,88", light, common),
+      poly("100,20 62,88 100,124 138,88", mid, common),
+      poly("100,20 138,88 162,72", dark, common),
+      poly("38,72 26,110 62,88", dark, common),
+      poly("162,72 138,88 174,110", dark, common),
+      poly("62,88 100,184 26,110", mid, common),
+      poly("138,88 174,110 100,184", dark, common),
+      poly("62,88 100,124 138,88 100,184", mid, common),
+      `<path d="M100 20 162 72 174 110 100 184 26 110 38 72Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
+      `<path d="M100 20 62 88 M100 20 138 88 M38 72 62 88 M162 72 138 88 M62 88 100 124 138 88 M62 88 26 110 M138 88 174 110 M62 88 100 184 M138 88 100 184 M100 124 100 184" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>`
     ].join("");
   }
   if (id === "d12") {
@@ -826,7 +893,7 @@ function skinPattern(id, ink, clip, dieId) {
     moon: `<path d="M130 54 C96 60 82 94 96 124 C106 146 126 154 150 144 C128 166 86 152 72 120 C56 82 86 52 130 54 Z" ${fill}/>`,
     dragon: `<g opacity="0.78"><path d="M42 138 C66 86 108 58 150 78 L162 58 L162 96 C150 88 134 92 122 108 C104 130 78 132 42 138 Z" fill="#3a0b05" stroke="#ffd2a8" stroke-width="5" stroke-linejoin="round"/><path d="M82 96 L108 46 L120 92 Z" fill="#ff9b45" stroke="#ffd2a8" stroke-width="4" stroke-linejoin="round"/><path d="M112 80 L136 58 M124 98 L154 92 M68 128 C86 112 104 114 120 104" stroke="#ffd2a8" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="143" cy="80" r="4" fill="#ffd84d"/></g>`,
     sun: `<circle cx="102" cy="100" r="28" fill="#fff4a6" opacity="0.35"/><path d="M102 46 V68 M102 132 V154 M48 100 H70 M134 100 H156 M64 62 L80 78 M124 122 L140 138 M140 62 L124 78 M80 122 L64 138" ${line}/>`,
-    wk: `<g opacity="0.86"><path d="M28 52 H172 V154 H28 Z" fill="#159447" opacity="0.62"/><path d="M28 52 L172 154 M172 52 L28 154" stroke="#ffffff" stroke-width="7" opacity="0.8"/><path d="M100 46 V160 M42 104 H158" stroke="#ffffff" stroke-width="6" opacity="0.88"/><circle cx="100" cy="104" r="28" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.8"/><path d="M30 52 H92 V96 H30 Z" fill="#d62525" opacity="0.5"/><path d="M108 112 H170 V154 H108 Z" fill="#1268d6" opacity="0.52"/></g>`,
+    wk: `<g opacity="0.9"><path d="M24 54 C56 42 78 52 98 78 C118 104 144 112 176 96" fill="none" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/><path d="M30 146 C64 112 96 112 126 138 C142 152 158 154 174 146" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/><path d="M42 58 C60 72 76 90 88 112" fill="none" stroke="#d62525" stroke-width="10" stroke-linecap="round"/><path d="M118 56 C142 62 154 76 164 96" fill="none" stroke="#159447" stroke-width="10" stroke-linecap="round"/><path d="M104 92 C126 88 144 96 160 118" fill="none" stroke="#1268d6" stroke-width="12" stroke-linecap="round"/><path d="M54 134 C74 124 96 126 118 144" fill="none" stroke="#7b1b14" stroke-width="8" stroke-linecap="round"/><circle cx="100" cy="104" r="22" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.88"/><path d="M84 96 L116 112 M116 96 L84 112" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.72"/></g>`,
     forest: `<path d="M100 42 C80 76 86 114 102 158 C120 114 122 76 100 42 Z" ${fill}/><path d="M100 58 V150 M78 96 C94 98 104 108 108 122 M124 86 C112 96 106 108 102 120" ${line}/>`,
     void: `<circle cx="100" cy="104" r="52" ${fill}/><circle cx="100" cy="104" r="26" fill="black" opacity="0.28"/><path d="M46 104 C72 78 128 78 154 104 C128 130 72 130 46 104 Z" ${line}/>`,
     paladin: `<path d="M100 38 L150 60 V104 C150 134 128 154 100 166 C72 154 50 134 50 104 V60 Z" ${fill}/><path d="M100 60 V136 M74 96 H126" ${line}/>`,
@@ -884,6 +951,36 @@ function renderPacks() {
     els.packList.appendChild(button);
   });
   els.shopList.innerHTML = "";
+}
+
+function renderLocalAccountOptions() {
+  const currentValue = els.localOpponentAccount.value || state.localDuel.opponent || "guest";
+  const names = Object.keys(readAccounts()).filter((name) => name !== currentAccount);
+  els.localOpponentAccount.innerHTML = `<option value="guest">Gast - Houten D6</option>${names.map((name) => `<option value="${name}">${name}</option>`).join("")}`;
+  els.localOpponentAccount.value = names.includes(currentValue) || currentValue === "guest" ? currentValue : "guest";
+}
+
+function renderLocalDuel() {
+  const opponent = getLocalOpponentLoadout();
+  const mainName = currentAccount || "Speler K";
+  els.localMainPlayer.textContent = `${mainName}: ${getActiveDie().name} ${getActiveSkin().name} - toets K`;
+  const sTotal = state.localDuel.rounds.reduce((sum, round) => sum + round.s, 0);
+  const kTotal = state.localDuel.rounds.reduce((sum, round) => sum + round.k, 0);
+  const result = state.localDuel.rounds.length === 3
+    ? kTotal === sTotal ? "Gelijkspel!" : kTotal > sTotal ? `${mainName} wint!` : `${opponent.name} wint!`
+    : `Wacht op toetsen: ${state.localDuel.sReady ? "S klaar" : "S"} / ${state.localDuel.kReady ? "K klaar" : "K"}`;
+  const rounds = [0, 1, 2].map((index) => {
+    const round = state.localDuel.rounds[index];
+    return `<div class="round-box"><strong>Ronde ${index + 1}</strong>${round ? `${opponent.name}: ${round.s} <small>(D${round.sSides})</small><br>${mainName}: ${round.k} <small>(D${round.kSides})</small>` : "Nog Niet Gegooid"}</div>`;
+  }).join("");
+  els.localDuelBoard.innerHTML = `
+    <div class="local-score">
+      <div><strong>S - ${opponent.name}</strong><span>${sTotal}</span><small>${opponent.die.name} ${opponent.skin.name}</small></div>
+      <div><strong>K - ${mainName}</strong><span>${kTotal}</span><small>${getActiveDie().name} ${getActiveSkin().name}</small></div>
+    </div>
+    <p class="boss-result">${state.localDuel.active ? result : "Klik op Start Duel. Daarna drukt speler S op S en speler K op K."}</p>
+    <div class="duel-grid">${rounds}</div>
+  `;
 }
 
 function renderQuests() {
@@ -1081,6 +1178,8 @@ function render() {
   renderDice();
   renderSkins();
   renderPacks();
+  renderLocalAccountOptions();
+  renderLocalDuel();
   renderQuests();
   renderMedalLibrary();
   renderBosses();
@@ -1103,10 +1202,20 @@ els.accountName.addEventListener("keydown", (event) => {
 els.questRollButton.addEventListener("click", playerQuestRoll);
 els.dieButton.addEventListener("click", playerQuestRoll);
 els.bossRollButton.addEventListener("click", playerBossRoll);
+els.startLocalDuelButton.addEventListener("click", startLocalDuel);
 els.installAppButton.addEventListener("click", installApp);
 els.skinToneSelect.addEventListener("change", () => updateAvatarAppearance("skinTone", els.skinToneSelect.value));
 els.hairColorSelect.addEventListener("change", () => updateAvatarAppearance("hairColor", els.hairColorSelect.value));
 els.hairStyleSelect.addEventListener("change", () => updateAvatarAppearance("hairStyle", els.hairStyleSelect.value));
+window.addEventListener("keydown", (event) => {
+  const tag = event.target?.tagName?.toLowerCase();
+  if (tag === "input" || tag === "select" || tag === "textarea") return;
+  const key = event.key.toLowerCase();
+  if (key === "s" || key === "k") {
+    event.preventDefault();
+    localKeyRoll(key);
+  }
+});
 els.adminToggleButton.addEventListener("click", () => {
   els.adminPanel.classList.toggle("hidden");
   if (!els.adminPanel.classList.contains("hidden")) els.adminPassword.focus();
