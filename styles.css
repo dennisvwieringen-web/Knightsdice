@@ -950,6 +950,10 @@ small {
   margin-bottom: 18px;
 }
 
+.quest-content {
+  margin-top: 12px;
+}
+
 .local-player-setup {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

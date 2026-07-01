@@ -73,6 +73,28 @@ const quests = [
   quest("quest_super", "Heldenproef", "Versla de superbaas.", 1, (s) => s.defeatedBosses.includes("boss_super") ? 1 : 0, "Heldenmedaille", 25, 10, 1)
 ];
 
+const bonusQuestTypes = [
+  { key: "rolls", title: "Tocht", text: (n) => `Gooi in totaal ${n} keer.`, check: (s) => s.totalRolls, start: 10, step: 10 },
+  { key: "sixes", title: "Zesjager", text: (n) => `Gooi in totaal ${n} zessen.`, check: (s) => s.sixes, start: 4, step: 3 },
+  { key: "ones", title: "Pechbreker", text: (n) => `Gooi in totaal ${n} enen.`, check: (s) => s.ones, start: 5, step: 3 },
+  { key: "high", title: "Hoge Wacht", text: (n) => `Gooi ${n} keer 8 of hoger.`, check: (s) => s.highRolls, start: 5, step: 4 },
+  { key: "max", title: "Perfecte Worp", text: (n) => `Gooi ${n} keer het hoogste getal van je dobbelsteen.`, check: (s) => s.maxRolls, start: 3, step: 2 },
+  { key: "coins", title: "Schatzoeker", text: (n) => `Verzamel in totaal ${n} Kronen.`, check: (s) => s.coins, start: 50, step: 35 },
+  { key: "packs", title: "Pakjesridder", text: (n) => `Open ${n} skinpakjes.`, check: (s) => s.openedPacks, start: 1, step: 1 },
+  { key: "skins", title: "Kleedkamer", text: (n) => `Bezit ${n} skins.`, check: () => countOwnedSkins(), start: 3, step: 1 },
+  { key: "bosses", title: "Baasbreker", text: (n) => `Versla ${n} eindbazen.`, check: (s) => s.defeatedBosses.length, start: 1, step: 1 },
+  { key: "super", title: "Koningsjager", text: (n) => `Versla de Eeuwige Dobbelkoning ${n} keer.`, check: (s) => s.superBossWins, start: 1, step: 1 }
+];
+
+for (let index = 0; index < 100; index += 1) {
+  const type = bonusQuestTypes[index % bonusQuestTypes.length];
+  const tier = Math.floor(index / bonusQuestTypes.length) + 1;
+  const target = type.start + (tier - 1) * type.step;
+  const nuggets = 2 + tier + (index % 5);
+  const coins = 5 + tier * 2;
+  quests.push(quest(`bonus_${type.key}_${tier}`, `${type.title} ${tier}`, type.text(target), target, type.check, `${nuggets} Klompjes`, coins, nuggets));
+}
+
 const bosses = [
   { id: "boss_1", name: "Baron Botbreker", dice: [6, 6, 6], reward: "18 Kronen en 2 Klompjes", coins: 18, nuggets: 2 },
   { id: "boss_2", name: "Gravin Schaduwstaal", dice: [8, 8, 6], reward: "Robijn Skin en 3 Klompjes", coins: 12, nuggets: 3 },
@@ -163,6 +185,8 @@ const els = {
   medalBoardCount: q("#medalBoardCount"),
   heroMedalBoardCount: q("#heroMedalBoardCount"),
   medalLibraryList: q("#medalLibraryList"),
+  questContent: q("#questContent"),
+  toggleQuestButton: q("#toggleQuestButton"),
   dieButton: q("#rollButton"),
   dieArt: q("#dieArt"),
   dieValue: q("#dieValue"),
@@ -1020,6 +1044,12 @@ function renderQuests() {
   });
 }
 
+function toggleQuestContent() {
+  const opening = els.questContent.classList.contains("hidden");
+  els.questContent.classList.toggle("hidden", !opening);
+  els.toggleQuestButton.textContent = opening ? "Quests Sluiten" : "Quests Openen";
+}
+
 function medalIcon(type) {
   if (type === "hero") {
     return `
@@ -1228,6 +1258,7 @@ els.questRollButton.addEventListener("click", playerQuestRoll);
 els.dieButton.addEventListener("click", playerQuestRoll);
 els.bossRollButton.addEventListener("click", playerBossRoll);
 els.startLocalDuelButton.addEventListener("click", startLocalDuel);
+els.toggleQuestButton.addEventListener("click", toggleQuestContent);
 els.localDuelBoard.addEventListener("click", (event) => {
   const button = event.target.closest("[data-local-roll]");
   if (!button) return;

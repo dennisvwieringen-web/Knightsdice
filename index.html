@@ -9,7 +9,7 @@
     <link rel="canonical" href="https://knightsdice.com/">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="logo.png?v=knights-dice-logo" type="image/png">
-    <link rel="stylesheet" href="styles.css?v=20260701-local-duel-dice">
+    <link rel="stylesheet" href="styles.css?v=20260701-more-quests">
   </head>
   <body>
     <section id="authScreen" class="auth-screen" aria-label="Inloggen">
@@ -189,17 +189,20 @@
       <section class="panel quest-board">
         <div class="panel-heading">
           <h2>Quests</h2>
-          <p>Bij elke quest staat welke medaille je krijgt.</p>
+          <button id="toggleQuestButton" class="primary" type="button">Quests Openen</button>
         </div>
-        <div class="medal-board">
-          <div><strong>Riddermedailles</strong><span id="medalBoardCount">0</span></div>
-          <div><strong>Heldenmedailles</strong><span id="heroMedalBoardCount">0</span></div>
+        <p>Bij elke quest staat welke medaille je krijgt. Er zijn nu meer dan 100 quests om Klompjes te verdienen.</p>
+        <div id="questContent" class="quest-content hidden">
+          <div class="medal-board">
+            <div><strong>Riddermedailles</strong><span id="medalBoardCount">0</span></div>
+            <div><strong>Heldenmedailles</strong><span id="heroMedalBoardCount">0</span></div>
+          </div>
+          <div class="medal-library">
+            <div class="mini-heading"><h3>Medaille Bibliotheek</h3><span>Verzameling</span></div>
+            <div id="medalLibraryList" class="medal-library-list"></div>
+          </div>
+          <div id="questList" class="quest-list"></div>
         </div>
-        <div class="medal-library">
-          <div class="mini-heading"><h3>Medaille Bibliotheek</h3><span>Verzameling</span></div>
-          <div id="medalLibraryList" class="medal-library-list"></div>
-        </div>
-        <div id="questList" class="quest-list"></div>
       </section>
 
       <section class="panel arena">
@@ -211,6 +214,6 @@
         <div id="bossList" class="boss-list"></div>
       </section>
     </main>
-    <script src="game.js?v=20260701-local-duel-dice"></script>
+    <script src="game.js?v=20260701-more-quests"></script>
   </body>
 </html>
