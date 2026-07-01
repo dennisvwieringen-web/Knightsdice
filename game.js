@@ -796,7 +796,7 @@ function dieClipPoints(id) {
   return {
     d4: "100,28 24,164 176,164",
     d6: "44,60 78,28 170,28 170,120 136,152 44,152",
-    d8: "100,20 164,68 172,126 100,180 28,126 36,68",
+    d8: "100,22 158,72 166,126 100,172 34,126 42,72",
     d10: "100,30 152,56 176,112 132,164 68,164 24,112 48,56",
     d12: "100,14 146,30 178,68 182,126 142,176 100,192 58,176 18,126 22,68 54,30",
     d20: "100,16 168,64 168,132 100,184 32,132 32,64"
@@ -807,7 +807,7 @@ function patternFacePoints(id) {
   return {
     d4: "100,28 24,164 176,164",
     d6: "44,60 136,60 136,152 44,152",
-    d8: "36,68 100,20 164,68 100,106",
+    d8: "42,72 100,22 158,72 166,126 100,126 34,126",
     d10: "66,88 100,42 134,88 100,132",
     d12: "100,66 142,94 126,146 74,146 58,94",
     d20: "64,84 136,84 100,136"
@@ -844,14 +844,15 @@ function dieBody(id, light, mid, dark, common) {
   }
   if (id === "d8") {
     return [
-      poly("100,20 36,68 100,106", light, common),
-      poly("100,20 100,106 164,68", mid, common),
-      poly("36,68 28,126 100,106", mid, common),
-      poly("164,68 100,106 172,126", dark, common),
-      poly("28,126 100,180 100,106", mid, common),
-      poly("172,126 100,106 100,180", dark, common),
-      `<path d="M100 20 164 68 172 126 100 180 28 126 36 68Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
-      `<path d="M100 20 V106 M36 68 100 106 164 68 M28 126 100 106 172 126 M100 106 V180" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`
+      poly("42,72 100,22 158,72 166,126 100,126 34,126", mid, common),
+      poly("42,72 34,126 100,126", light, common),
+      poly("158,72 100,126 166,126", dark, common),
+      poly("34,126 100,172 100,126", mid, common),
+      poly("166,126 100,126 100,172", dark, common),
+      poly("42,72 100,22 100,126", light, common),
+      poly("100,22 158,72 100,126", mid, common),
+      `<path d="M100 22 158 72 166 126 100 172 34 126 42 72Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
+      `<path d="M100 22 100 126 M42 72 100 126 158 72 M34 126 H166 M34 126 100 172 166 126" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`
     ].join("");
   }
   if (id === "d10") {
