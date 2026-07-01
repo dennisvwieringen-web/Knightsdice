@@ -796,8 +796,8 @@ function dieClipPoints(id) {
   return {
     d4: "100,28 24,164 176,164",
     d6: "44,60 78,28 170,28 170,120 136,152 44,152",
-    d8: "100,22 158,72 166,126 100,172 34,126 42,72",
-    d10: "100,30 152,56 176,112 132,164 68,164 24,112 48,56",
+    d8: "100,20 150,62 164,122 100,174 36,122 50,62",
+    d10: "100,18 158,72 178,124 124,162 100,178 76,162 22,124 42,72",
     d12: "100,14 146,30 178,68 182,126 142,176 100,192 58,176 18,126 22,68 54,30",
     d20: "100,16 168,64 168,132 100,184 32,132 32,64"
   }[id];
@@ -807,8 +807,8 @@ function patternFacePoints(id) {
   return {
     d4: "100,28 24,164 176,164",
     d6: "44,60 136,60 136,152 44,152",
-    d8: "42,72 100,22 158,72 166,126 100,126 34,126",
-    d10: "66,88 100,42 134,88 100,132",
+    d8: "50,62 100,20 150,62 164,122 100,122 36,122",
+    d10: "58,82 100,34 142,82 126,138 74,138",
     d12: "100,66 142,94 126,146 74,146 58,94",
     d20: "64,84 136,84 100,136"
   }[id] || dieClipPoints(id);
@@ -844,29 +844,33 @@ function dieBody(id, light, mid, dark, common) {
   }
   if (id === "d8") {
     return [
-      poly("42,72 100,22 158,72 166,126 100,126 34,126", mid, common),
-      poly("42,72 34,126 100,126", light, common),
-      poly("158,72 100,126 166,126", dark, common),
-      poly("34,126 100,172 100,126", mid, common),
-      poly("166,126 100,126 100,172", dark, common),
-      poly("42,72 100,22 100,126", light, common),
-      poly("100,22 158,72 100,126", mid, common),
-      `<path d="M100 22 158 72 166 126 100 172 34 126 42 72Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
-      `<path d="M100 22 100 126 M42 72 100 126 158 72 M34 126 H166 M34 126 100 172 166 126" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`
+      poly("50,62 100,20 100,122", light, common),
+      poly("100,20 150,62 100,122", mid, common),
+      poly("50,62 36,122 100,122", mid, common),
+      poly("150,62 100,122 164,122", dark, common),
+      poly("36,122 100,174 100,122", mid, common),
+      poly("164,122 100,122 100,174", dark, common),
+      `<path d="M100 20 150 62 164 122 100 174 36 122 50 62Z" fill="none" stroke="rgba(255,255,255,0.56)" stroke-width="5" stroke-linejoin="round"/>`,
+      `<path d="M100 20 V122 M50 62 100 122 150 62 M36 122 H164 M36 122 100 174 164 122" fill="none" stroke="rgba(0,0,0,0.24)" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>`
     ].join("");
   }
   if (id === "d10") {
     return [
-      poly("100,30 48,56 66,88", light, common),
-      poly("100,30 66,88 100,132 134,88", mid, common),
-      poly("100,30 134,88 152,56", dark, common),
-      poly("48,56 24,112 66,88", mid, common),
-      poly("152,56 134,88 176,112", dark, common),
-      poly("24,112 68,164 100,132 66,88", light, common),
-      poly("176,112 134,88 100,132 132,164", dark, common),
-      poly("68,164 100,132 132,164", mid, common),
-      `<path d="M100 30 152 56 176 112 132 164 68 164 24 112 48 56Z" fill="none" stroke="rgba(255,255,255,0.52)" stroke-width="5" stroke-linejoin="round"/>`,
-      `<path d="M100 30 66 88 M100 30 134 88 M48 56 66 88 M152 56 134 88 M24 112 66 88 M176 112 134 88 M66 88 100 132 134 88 M68 164 100 132 132 164 M24 112 68 164 M176 112 132 164" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`
+      poly("100,18 42,72 58,82", light, common),
+      poly("100,18 58,82 100,34 142,82", mid, common),
+      poly("100,18 142,82 158,72", dark, common),
+      poly("42,72 22,124 58,82", mid, common),
+      poly("158,72 142,82 178,124", dark, common),
+      poly("58,82 74,138 22,124", light, common),
+      poly("142,82 178,124 126,138", dark, common),
+      poly("58,82 100,34 142,82 126,138 74,138", mid, common),
+      poly("74,138 100,178 100,154", light, common),
+      poly("126,138 100,154 100,178", dark, common),
+      poly("74,138 100,154 126,138", mid, common),
+      poly("22,124 76,162 100,178 74,138", mid, common),
+      poly("178,124 126,138 100,178 124,162", dark, common),
+      `<path d="M100 18 158 72 178 124 124 162 100 178 76 162 22 124 42 72Z" fill="none" stroke="rgba(255,255,255,0.56)" stroke-width="5" stroke-linejoin="round"/>`,
+      `<path d="M100 18 58 82 M100 18 142 82 M42 72 58 82 M158 72 142 82 M22 124 58 82 74 138 M178 124 142 82 126 138 M58 82 100 34 142 82 M74 138 100 154 126 138 M76 162 100 178 124 162" fill="none" stroke="rgba(0,0,0,0.24)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`
     ].join("");
   }
   if (id === "d12") {
